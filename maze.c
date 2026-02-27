@@ -11,6 +11,7 @@ void crea_tablero(int l, int c, char matriz[l][c]){
         }
     }
 }
+
 //Imprime el laberinto
 void imprimir_maze(int l, int c, char matriz[l][c]){
         for(int i = 0; i < l; i++ ){
@@ -21,6 +22,7 @@ void imprimir_maze(int l, int c, char matriz[l][c]){
         }
 }
 
+//Genera el laberinto
 void generar_maze(int x, int y, int l, int c, char matriz[l][c]){
 /* Se encarga de "escabar" los caminos, siendo "." lugar posible para moverse y
 "#" las paredes del laberinto*/
@@ -61,21 +63,22 @@ esto sirve para que el movimiento sea mas aleatorio*/
             y_sim = y - 2;
             y_pared = y - 1;
         }
-
+//Corrobora que este dentro del laberinto y que a donde se quiera mover sea una "pared" para "cavar"
     if (x_sim > 0 && x_sim < l - 1 && y_sim > 0 && y_sim < c-1 && matriz[x_sim][y_sim]=='#'){
         matriz[x_pared][y_pared] = '.';
         printf("Voy a excavar en (%d, %d)\n", x_sim, y_sim);
         generar_maze(x_sim, y_sim, l, c, matriz);
-        printf("Volví a (%d, %d) y sigo buscando\n", x, y); // Aquí es donde "recuerda"
+        printf("Volví a (%d, %d) y sigo buscando\n", x, y); //Donde vuelve al estado anterior
        }
     }
 }
 
 int main(){
+    int lineas, columnas;
 /*Se usa para la funcion rand(), "semilla" que da un punto de partida
 distinto cada vez que se ejecuta el codigo*/
     srand(time(NULL));
-    int lineas, columnas;
+    
 
     printf("Escribir la cantidad de lineas de la matriz:\t");
     scanf("%d", &lineas);
@@ -89,9 +92,8 @@ distinto cada vez que se ejecuta el codigo*/
     if (columnas % 2 == 0){
         columnas--;
     }
-
+    
     char matriz[lineas][columnas];
-
     crea_tablero(lineas,columnas,matriz);
     generar_maze(1,1,lineas,columnas,matriz);
     matriz[0][1] = 'E'; //Entrada al laberinto
