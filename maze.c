@@ -44,7 +44,7 @@ esto sirve para que el movimiento sea mas aleatorio*/
 //Serian las celdas paredes
         int x_pared = x;
         int y_pared = y;
-//Los saltos o pasos se hacen de 2 en 2 de manera a que se puedan generar 
+//Los saltos o pasos se hacen de 2 en 2 de manera a que se puedan generar
         if(movimientos[i] == 0){ //0 - Norte
             x_sim = x - 2;
             x_pared = x - 1;
@@ -81,6 +81,15 @@ distinto cada vez que se ejecuta el codigo*/
     scanf("%d", &lineas);
     printf("Escribir la cantidad de columnas de la matriz:\t");
     scanf("%d", &columnas);
+
+//como el laberinto solo se puede generar con numeros impares, se hace esto, si es par se le resta 1, para ser impar
+    if (lineas % 2 == 0){
+        lineas--;
+    }
+    if (columnas % 2 == 0){
+        columnas--;
+    }
+
     char matriz[lineas][columnas];
 
     crea_tablero(lineas,columnas,matriz);
