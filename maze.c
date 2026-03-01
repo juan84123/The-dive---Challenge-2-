@@ -22,7 +22,8 @@ void imprimir_maze(int l, int c, char matriz[l][c]){
         }
 }
 
-//Genera el laberinto
+//Genera el laberinto, Backtracking y DFS (Depth-First Search)
+/*Generación de laberintos con DFS recursivo y barajado aleatorio de direcciones. Es literalmente backtracking cavando túneles*/
 void generar_maze(int x, int y, int l, int c, char matriz[l][c]){
 /* Se encarga de "escabar" los caminos, siendo "." lugar posible para moverse y
 "#" las paredes del laberinto*/
@@ -77,8 +78,8 @@ int main(){
     int lineas, columnas;
 /*Se usa para la funcion rand(), "semilla" que da un punto de partida
 distinto cada vez que se ejecuta el codigo*/
-    srand(time(NULL));
-    
+    srand(time(NULL)); //investigar bien que es, como fnciona y para que sirve
+
 
     printf("Escribir la cantidad de lineas de la matriz:\t");
     scanf("%d", &lineas);
@@ -92,7 +93,7 @@ distinto cada vez que se ejecuta el codigo*/
     if (columnas % 2 == 0){
         columnas--;
     }
-    
+
     char matriz[lineas][columnas];
     crea_tablero(lineas,columnas,matriz);
     generar_maze(1,1,lineas,columnas,matriz);
