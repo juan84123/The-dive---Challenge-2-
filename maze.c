@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+void crea_tablero(int l, int c, char matriz[l][c]); //Porque se define aca tambien la funcion?, function prototype
 
 
 //Crea el laberinto y lo llena de paredes (#)
@@ -95,6 +96,7 @@ distinto cada vez que se ejecuta el codigo*/
     }
 
     char matriz[lineas][columnas];
+    //Entender tambien como al psarle a la funcion la matriz, como esta cambia si la funcion no retorna nada
     crea_tablero(lineas,columnas,matriz);
     generar_maze(1,1,lineas,columnas,matriz);
     matriz[0][1] = 'E'; //Entrada al laberinto
