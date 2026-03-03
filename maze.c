@@ -88,7 +88,7 @@ Si saltaras de 1 en 1, los pasillos se unirían y el laberinto no tendría estru
     }
 }
 
-//Resuelve el laberinto usando BFS(Breadth-First Search
+//Resuelve el laberinto usando BFS(Breadth-First Search)
 void resuelve_laberinto_bfs(int f, int c, char matriz_laberinto[f][c]){
 /* Creamos un array de estructuras Punto (x,y) para usarlo como una cola (FIFO)
    El tamaño f*c asegura que quepan todas las celdas del laberinto si fuera necesario*/
@@ -218,4 +218,3 @@ del primer elemento. Es decir, trabajas sobre la matriz original. Es un puntero 
     }
    return 0;
 }
-
