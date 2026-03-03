@@ -1,51 +1,52 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
+#include <stdio.h> //para printf y scanf
+#include <stdlib.h> //para rand() y srand()
+#include <time.h> //para time(NULL)
 
-void crea_tablero(int f, int c, char matriz[f][c]);
-void imprimir_laberinto(int f, int c, char matriz[f][c]);
-void generar_laberinto(int x, int y, int f, int c, char matriz[f][c]);
-void resuelve_laberinto_bfs(int f, int c, char matriz[f][c]);
-/*Si usas una función en main que está escrita abajo, el compilador se pierde.
-El prototipo arriba le dice: "Oye, más adelante verás una función con este nombre
-y estos parámetros, no te asustes".*/
+//Function prototype: Le avisan al compilador que estas funciones existen
+void crea_tablero(int f, int c, char matriz_laberinto[f][c]);
+void imprimir_laberinto(int f, int c, char matriz_laberinto[f][c]);
+void generar_laberinto(int x, int y, int f, int c, char matriz_laberinto[f][c]);
+void resuelve_laberinto_bfs(int f, int c, char matriz_laberinto[f][c]);
 
+//Se define un tipo de dato que agrupa 2 enteros
 typedef struct {
     int x;
     int y;
 } Punto;
 
 //Crea el laberinto y lo llena de paredes (#)
-void crea_tablero(int f, int c, char matriz[f][c]){
+void crea_tablero(int f, int c, char matriz_laberinto[f][c]){
     for(int i = 0; i < f; i++ ){
         for(int j = 0; j < c; j++){
-                matriz[i][j] = '#';
+                matriz_laberinto[i][j] = '#';
         }
     }
 }
 
 //Imprime el laberinto
-void imprimir_laberinto(int f, int c, char matriz[f][c]){
+void imprimir_laberinto(int f, int c, char matriz_laberinto[f][c]){
         for(int i = 0; i < f; i++ ){
             for(int j = 0; j < c; j++){
-                printf("%c ",matriz[i][j]);
+                printf("%c ",matriz_laberinto[i][j]);
             }
             printf("\n");
         }
 }
 
-/*Generación de laberintos con DFS (Depth-First Search) recursivo y barajado aleatorio de direcciones.
-Es backtracking "cavando" túneles*/
-void generar_laberinto(int x, int y, int f, int c, char matriz[f][c]){
-/* Se encarga de "escabar" los caminos, siendo "." lugar posible para moverse y
+//Generación de laberintos con DFS (Depth-First Search) recursivo.
+//Recibe la posicion, las dimenciones del laberinto y el laberinto
+void generar_laberinto(int x, int y, int f, int c, char matriz_laberinto[f][c]){
+/* Se encarga de "escabar" los caminos, siendo " " lugar posible para moverse y
 "#" las paredes del laberinto*/
-    matriz[x][y] = ' '; //Se marca la celda recorrida
+//Se marca la celda recorrida
+    matriz_laberinto[x][y] = ' '; 
 //0 - Norte, 1 - Sur, 2 - Este, 3 - Oeste
     int movimientos[] = {0,1,2,3};
 /*Este for lo que hace es hacer valores random de las posibles movidas y meterlas dentro del vector,
 esto sirve para que el movimiento sea mas aleatorio*/
+//Fisher-Yates shuffle
     for (int i = 0; i < 4; i++){
-        int r = rand() % 4;
+        int r = rand() % 4; //guarda el indice aleatorio de entre 0 y 4, 
         int aux = movimientos[r];
         movimientos[r] = movimientos[i];
         movimientos[i] = aux;
@@ -53,13 +54,14 @@ esto sirve para que el movimiento sea mas aleatorio*/
 
 //Aqui se recorre el vector con los movimientos aleatorios
     for(int i = 0; i < 4; i++){
-//Serian las celdas donde se quiere mover
-        int x_sim = x;
+//Para cada dirección barajada, se calculan dos coordenadas: el destino y la pared entre medio.
+        int x_sim = x; //Serian las celdas donde se quiere mover
         int y_sim = y;
-//Serian las celdas paredes
-        int x_pared = x;
+        int x_pared = x;//Serian las celdas paredes
         int y_pared = y;
-//Los saltos o pasos se hacen de 2 en 2 de manera a que se puedan generar
+//Para cada dirección barajada, se calculan dos coordenadas: el destino y la pared entre medio.
+/*Los saltos son **de 2 en 2** porque entre cada celda de camino siempre hay una pared. 
+Si saltaras de 1 en 1, los pasillos se unirían y el laberinto no tendría estructura.*/
         if(movimientos[i] == 0){ //0 - Norte
             x_sim = x - 2;
             x_pared = x - 1;
@@ -76,37 +78,54 @@ esto sirve para que el movimiento sea mas aleatorio*/
             y_sim = y - 2;
             y_pared = y - 1;
         }
-//Corrobora que este dentro del laberinto y que a donde se quiera mover sea una "pared" para "cavar"
-    if (x_sim > 0 && x_sim < f - 1 && y_sim > 0 && y_sim < c-1 && matriz[x_sim][y_sim]=='#'){
-        matriz[x_pared][y_pared] = ' ';
+//Corrobora que este dentro del laberinto y que a donde se quiera mover sea una "pared"
+    if (x_sim > 0 && x_sim < f - 1 && y_sim > 0 && y_sim < c-1 && matriz_laberinto[x_sim][y_sim]=='#'){
+        matriz_laberinto[x_pared][y_pared] = ' '; // derriba la pared intermedia
         printf("Voy a excavar en (%d, %d)\n", x_sim, y_sim);
-        generar_laberinto(x_sim, y_sim, f, c, matriz);
+        generar_laberinto(x_sim, y_sim, f, c, matriz_laberinto);
         printf("Volvi a (%d, %d) y sigo buscando\n", x, y); //Donde vuelve al estado anterior
        }
     }
 }
 
-void resuelve_laberinto_bfs(int f, int c, char matriz[f][c]){
+//Resuelve el laberinto usando BFS(Breadth-First Search
+void resuelve_laberinto_bfs(int f, int c, char matriz_laberinto[f][c]){
+/* Creamos un array de estructuras Punto (x,y) para usarlo como una cola (FIFO)
+   El tamaño f*c asegura que quepan todas las celdas del laberinto si fuera necesario*/
     Punto cola[f*c];
+// Variable bandera: 0 significa "buscando", 1 significa "salida encontrada"
     int encontrado = 0;
+// Índice 'inicio' apunta al frente de la cola (el siguiente a procesar)
     int inicio = 0;
+// Índice 'fin' apunta al final de la cola (donde meteremos nuevos puntos)
     int fin = 0;
+// Matriz de enteros para marcar qué celdas ya se visitaron y no repetir camino
     int visitados[f][c];
-    for(int i=0; i<f; i++){
+
+//Se inicializa en 0 la matriz
+for(int i=0; i<f; i++){
         for(int j=0; j<c; j++){
             visitados[i][j] = 0;
         }
     }
+// Matriz de estructuras Punto(x,y) para guardar quién es el "padre" de cada celda descubierta
     Punto padres[f][c];
+// Punto de inicio (donde el algoritmo comienza a caminar)
     Punto p_inicio = {1,1};
+// Punto de salida (las coordenadas que queremos alcanzar)
     Punto p_salida = {f-1, c-2};
-    cola[fin] = p_inicio;
+// Ponemos el primer punto (inicio) en la cola
+    cola[fin] = p_inicio; 
+// Aumentamos el contador del final de la cola
     fin++;
+// Marcamos la celda de inicio como visitada en nuestra matriz de control
     visitados[p_inicio.x][p_inicio.y] = 1;
 
+// El bucle principal: se ejecuta mientras haya puntos en la cola
     while (inicio < fin){
-    // Sacamos el punto actual de la cola
+// Sacamos el punto que está al frente de la cola
         Punto actual = cola[inicio];
+// Movemos el índice de inicio al siguiente elemento
         inicio++;
     // ¿Es este punto el vecino de la salida?
     // Si llegamos a la salida, marcamos como encontrado y salimos del bucle
@@ -114,40 +133,49 @@ void resuelve_laberinto_bfs(int f, int c, char matriz[f][c]){
             encontrado = 1;
             break;
         }
-        // Direcciones: Norte, Sur, Este, Oeste
+        // Vectores de dirección para movernos: Norte, Sur, Este, Oeste
         int dx[] = {-1, 1, 0, 0};
         int dy[] = {0, 0, 1, -1};
 
+        // Revisamos los 4 vecinos posibles del punto actual
         for (int i = 0; i < 4; i++) {
+            // Calculamos la coordenada del vecino (nx, ny)
             int nx = actual.x + dx[i];
             int ny = actual.y + dy[i];
 
             // Verificamos:
-            // 1. Que esté dentro de los límites
-            // 2. Que sea un camino (' ' o 'S')
-            // 3. Que no haya sido visitado
-            if (nx >= 0 && nx < f && ny >= 0 && ny < c && (matriz[nx][ny] == ' ' || matriz[nx][ny] == 'S') && !visitados[nx][ny]) {
+            if (nx >= 0 && nx < f && ny >= 0 && ny < c &&  // 1. Que esté dentro de los límites
+                 (matriz_laberinto[nx][ny] == ' ' || matriz_laberinto[nx][ny] == 'S') && // 2. Que sea un camino (' ' o 'S')
+                 !visitados[nx][ny]) { // 3. Que no haya sido visitado
+            // Marcamos al vecino como visitado para que nadie más lo procese
                 visitados[nx][ny] = 1;
+            // Guardamos que llegamos a este vecino (nx, ny) desde el punto 'actual'
                 padres[nx][ny] = actual; // Guardamos de dónde vinimos
+            // Añadimos el vecino al final de la cola para analizarlo después
                 cola[fin].x = nx;
                 cola[fin].y = ny;
+            // Incrementamos el índice del final de la cola
                 fin++;
             }
         }
     }
+    // Una vez terminado el bucle, revisamos si la bandera 'encontrado' está activa
     if (encontrado) {
-        // Empezamos desde el padre de la salida para no sobreescribir la 'S'
+        // Empezamos la reconstrucción desde el padre de la salida (el paso previo a la 'S')
         Punto actual = padres[p_salida.x][p_salida.y];
 
-        // Mientras no hayamos vuelto al punto de inicio (1,1)
+        // Vamos hacia atrás saltando de padre en padre hasta llegar al inicio (1, 1)
         while (!(actual.x == p_inicio.x && actual.y == p_inicio.y)) {
-            matriz[actual.x][actual.y] = '*'; // Marcamos el camino
+        // Marcamos la celda con un asterisco para visualizar el camino resuelto
+            matriz_laberinto[actual.x][actual.y] = '*'; // Marcamos el camino
+        // Retrocedemos: el nuevo 'actual' ahora es el padre del que acabamos de pintar
             actual = padres[actual.x][actual.y]; // Saltamos al abuelo, bisabuelo...
         }
-        // Opcional: marcar el inicio también con '*' si quieres que se vea conectado
-        matriz[p_inicio.x][p_inicio.y] = '*';
+        // Marcamos también el inicio con un asterisco para completar el recorrido visual
+        matriz_laberinto[p_inicio.x][p_inicio.y] = '*';
     } else {
-        printf("No se encontro una ruta de salida.\n");
+        // Si el bucle terminó y la bandera sigue en 0, no hay ruta posible
+        printf("No se encontro salida.\n");
     }
 }
 
@@ -160,7 +188,7 @@ Si no le das una "semilla" (seed) diferente cada vez, siempre generará la misma
 time(NULL) usa los segundos actuales del reloj del sistema para que la semilla siempre sea distinta.*/
 
     printf("Escribir la cantidad de filas de la matriz:\t");
-    scanf("%d", &filas);
+    scanf("%d", &filas); //explicar por que se usa &
     printf("Escribir la cantidad de columnas de la matriz:\t");
     scanf("%d", &columnas);
 
@@ -171,22 +199,23 @@ time(NULL) usa los segundos actuales del reloj del sistema para que la semilla s
     if (columnas % 2 == 0){
         columnas--;
     }
-
-    char matriz[filas][columnas];
+//Se declara la matriz que sera el laberinto
+    char matriz_laberinto[filas][columnas];
 /*En C, cuando pasas un array a una función, no pasas una copia, pasas la dirección de memoria
 del primer elemento. Es decir, trabajas sobre la matriz original. Es un puntero escondido*/
-    crea_tablero(filas,columnas,matriz);
-    generar_laberinto(1,1,filas,columnas,matriz);
-    matriz[0][1] = 'E'; //Entrada al laberinto
-    matriz[filas-1][columnas-2] = 'S'; //Salida del laberinto
-    printf("\n--- LABERINTO GENERADO ---\n");
-    imprimir_laberinto(filas,columnas,matriz);
+    crea_tablero(filas,columnas,matriz_laberinto);
+    generar_laberinto(1,1,filas,columnas,matriz_laberinto);
+    matriz_laberinto[0][1] = 'E'; //Entrada al laberinto
+    matriz_laberinto[filas-1][columnas-2] = 'S'; //Salida del laberinto
+    printf("\n### LABERINTO GENERADO ###\n");
+    imprimir_laberinto(filas,columnas,matriz_laberinto);
     printf("Resolver el laberinto? (s/n):\t");
     scanf(" %c", &resolver);
     if (resolver == 's'){
-        resuelve_laberinto_bfs(filas,columnas,matriz);
-        printf("\n--- LABERINTO RESUELTO ---\n");
-        imprimir_laberinto(filas, columnas, matriz);
+        resuelve_laberinto_bfs(filas,columnas,matriz_laberinto);
+        printf("\n### LABERINTO RESUELTO ###\n");
+        imprimir_laberinto(filas, columnas, matriz_laberinto);
     }
    return 0;
 }
+
