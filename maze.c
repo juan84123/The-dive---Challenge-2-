@@ -260,13 +260,13 @@ del primer elemento. Es decir, trabajas sobre la matriz original. Es un puntero 
     generar_laberinto(1,1,filas,columnas,matriz_laberinto);
     matriz_laberinto[0][1] = 'E'; //Entrada al laberinto
     matriz_laberinto[filas-1][columnas-2] = 'S'; //Salida del laberinto
-    printf("\n### LABERINTO GENERADO ###\n");
+    printf("\n    LABERINTO GENERADO    \n");
     imprimir_laberinto(filas,columnas,matriz_laberinto);
     printf("Resolver el laberinto? (s/n):\t");
     scanf(" %c", &resolver);
     if (resolver == 's'){
         resuelve_laberinto_bfs(filas,columnas,matriz_laberinto);
-        printf("\n### LABERINTO RESUELTO ###\n");
+        printf("\n    LABERINTO RESUELTO    \n");
         imprimir_laberinto(filas, columnas, matriz_laberinto);
     }
    return 0;
