@@ -33,14 +33,14 @@ void imprimir_laberinto(int f, int c, char matriz_laberinto[f][c]){
         }
 }
 
-//Generación de laberintos con DFS (Depth-First Search) recursivo.
+//Generación de laberintos con DFS (Depth-First Search) recursivo, usa pila(Stack), LIFO.
 //Recibe la posicion, las dimenciones del laberinto y el laberinto
 void generar_laberinto(int x, int y, int f, int c, char matriz_laberinto[f][c]){
 /* Se encarga de "escabar" los caminos, siendo " " lugar posible para moverse y
 "#" las paredes del laberinto*/
 //Se marca la celda recorrida
     matriz_laberinto[x][y] = ' '; 
-//0 - Norte, 1 - Sur, 2 - Este, 3 - Oeste
+//Se crea un vector con las podibles movidas: 0 - Norte, 1 - Sur, 2 - Este, 3 - Oeste
     int movimientos[] = {0,1,2,3};
 /*Este for lo que hace es hacer valores random de las posibles movidas y meterlas dentro del vector,
 esto sirve para que el movimiento sea mas aleatorio*/
@@ -88,7 +88,7 @@ Si saltaras de 1 en 1, los pasillos se unirían y el laberinto no tendría estru
     }
 }
 
-//Resuelve el laberinto usando BFS(Breadth-First Search)
+//Resuelve el laberinto usando BFS(Breadth-First Search), usa cola(queue), FIFO
 void resuelve_laberinto_bfs(int f, int c, char matriz_laberinto[f][c]){
 /* Creamos un array de estructuras Punto (x,y) para usarlo como una cola (FIFO)
    El tamaño f*c asegura que quepan todas las celdas del laberinto si fuera necesario*/
@@ -122,10 +122,36 @@ for(int i=0; i<f; i++){
     visitados[p_inicio.x][p_inicio.y] = 1;
 
 // El bucle principal: se ejecuta mientras haya puntos en la cola
+/*visitados[nx][ny] = 1;      // se marca para no repetirlo
+padres[nx][ny] = actual;    // se guarda de dónde vino
+cola[fin].x = nx;
+cola[fin].y = ny;
+fin++;                      // se mete al final de la cola
+```
+
+---
+
+## El proceso completo visualmente
+
+Supón este laberinto simple, partiendo de `(1,1)`:
+```
+Proceso (1,1) → descubre (1,3) y (3,1) → los mete en cola
+Proceso (1,3) → descubre (1,5) y (3,3) → los mete en cola
+Proceso (3,1) → descubre (3,3)... ya visitado, lo ignora
+...y así hasta llegar a 'S'*/
     while (inicio < fin){
 // Sacamos el punto que está al frente de la cola
         Punto actual = cola[inicio];
 // Movemos el índice de inicio al siguiente elemento
+/*Punto actual = cola[inicio];
+inicio++;
+```
+
+Se **saca** el punto del frente. Mover `inicio++` es equivalente a eliminarlo de la cola:
+```
+cola: [ (1,1), (1,3), (3,3), , , ]
+                ↑              ↑
+             inicio=1        fin=3 */
         inicio++;
     // ¿Es este punto el vecino de la salida?
     // Si llegamos a la salida, marcamos como encontrado y salimos del bucle
@@ -145,12 +171,12 @@ for(int i=0; i<f; i++){
 
             // Verificamos:
             if (nx >= 0 && nx < f && ny >= 0 && ny < c &&  // 1. Que esté dentro de los límites
-                 (matriz_laberinto[nx][ny] == ' ' || matriz_laberinto[nx][ny] == 'S') && // 2. Que sea un camino (' ' o 'S')
-                 !visitados[nx][ny]) { // 3. Que no haya sido visitado
+                (matriz_laberinto[nx][ny] == ' ' || matriz_laberinto[nx][ny] == 'S') && // 2. Que sea un camino (' ' o 'S')
+                visitados[nx][ny] == 0) { // 3. Que no haya sido visitado
             // Marcamos al vecino como visitado para que nadie más lo procese
                 visitados[nx][ny] = 1;
             // Guardamos que llegamos a este vecino (nx, ny) desde el punto 'actual'
-                padres[nx][ny] = actual; // Guardamos de dónde vinimos
+                padres[nx][ny] = actual; // Guardamos de dónde vinimos, el padre
             // Añadimos el vecino al final de la cola para analizarlo después
                 cola[fin].x = nx;
                 cola[fin].y = ny;
@@ -166,6 +192,25 @@ for(int i=0; i<f; i++){
 
         // Vamos hacia atrás saltando de padre en padre hasta llegar al inicio (1, 1)
         while (!(actual.x == p_inicio.x && actual.y == p_inicio.y)) {
+        /*padres[hijo.x][hijo.y] = padre;
+```
+Visualmente:
+```
+padres[3][3] = {1,3}
+       ↑  ↑     ↑  ↑
+    pos hijo   valor padre
+Entonces cuando haces:
+cactual = padres[actual.x][actual.y];
+```
+
+Estás diciendo: *"busca en la posición de actual, y devuélveme quién es su padre"*. Ese padre se convierte en el nuevo `actual`, y en la siguiente vuelta del while repites lo mismo, subiendo un nivel más.
+
+Es como una cadena:
+```
+(3,5) → busco padres[3][5] → me da (3,3)
+(3,3) → busco padres[3][3] → me da (1,3)
+(1,3) → busco padres[1][3] → me da (1,1)
+(1,1) → es el inicio → para*/
         // Marcamos la celda con un asterisco para visualizar el camino resuelto
             matriz_laberinto[actual.x][actual.y] = '*'; // Marcamos el camino
         // Retrocedemos: el nuevo 'actual' ahora es el padre del que acabamos de pintar
