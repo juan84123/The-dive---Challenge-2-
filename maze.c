@@ -1,3 +1,4 @@
+//Librerias, caja de herrmientas
 #include <stdio.h> //para printf y scanf
 #include <stdlib.h> //para rand() y srand()
 #include <time.h> //para time(NULL)
@@ -7,6 +8,8 @@ void crea_tablero(int f, int c, char matriz_laberinto[f][c]);
 void imprimir_laberinto(int f, int c, char matriz_laberinto[f][c]);
 void generar_laberinto(int x, int y, int f, int c, char matriz_laberinto[f][c]);
 void resuelve_laberinto_bfs(int f, int c, char matriz_laberinto[f][c]);
+
+//Los arreglos (arrays) siempre se pasan por referencia (puntero implícito).
 
 //Se define un tipo de dato que agrupa 2 enteros
 typedef struct {
@@ -230,10 +233,15 @@ int main(){
     srand(time(NULL));
 /*srand(time(NULL)): rand() es un algoritmo matemático que genera números que parecen aleatorios.
 Si no le das una "semilla" (seed) diferente cada vez, siempre generará la misma secuencia.
-time(NULL) usa los segundos actuales del reloj del sistema para que la semilla siempre sea distinta.*/
+time(NULL) usa los segundos actuales del reloj del sistema para que la semilla siempre sea distinta.
+rand() no inventa un número de la nada. Utiliza una fórmula matemática (una ecuación) donde tomas un 
+número inicial y le aplicas operaciones (multiplicaciones, sumas y restos)
+Tú le das un número inicial (llamado Semilla o Seed).
+La fórmula escupe un resultado.
+Ese resultado se usa como entrada para generar el siguiente.*/
 
     printf("Escribir la cantidad de filas de la matriz:\t");
-    scanf("%d", &filas); //explicar por que se usa &
+    scanf("%d", &filas); // & significa "dirección de". Estás pasándole a la función scanf un puntero a la variable filas
     printf("Escribir la cantidad de columnas de la matriz:\t");
     scanf("%d", &columnas);
 
@@ -247,7 +255,7 @@ time(NULL) usa los segundos actuales del reloj del sistema para que la semilla s
 //Se declara la matriz que sera el laberinto
     char matriz_laberinto[filas][columnas];
 /*En C, cuando pasas un array a una función, no pasas una copia, pasas la dirección de memoria
-del primer elemento. Es decir, trabajas sobre la matriz original. Es un puntero escondido*/
+del primer elemento. Es decir, trabajas sobre la matriz original. Es un puntero implícito */
     crea_tablero(filas,columnas,matriz_laberinto);
     generar_laberinto(1,1,filas,columnas,matriz_laberinto);
     matriz_laberinto[0][1] = 'E'; //Entrada al laberinto
