@@ -191,7 +191,7 @@ cola: [ (1,1), (1,3), (3,3), , , ]
         Punto actual = padres[p_salida.x][p_salida.y];
 
         // Vamos hacia atrás saltando de padre en padre hasta llegar al inicio (1, 1)
-        while (!(actual.x == p_inicio.x && actual.y == p_inicio.y)) {
+        while (actual.x != p_inicio.x || actual.y != p_inicio.y) { //OR
         /*padres[hijo.x][hijo.y] = padre;
 ```
 Visualmente:
