@@ -90,9 +90,9 @@ Si saltaras de 1 en 1, los pasillos se unirían y el laberinto no tendría estru
 //Corrobora que este dentro del laberinto y que a donde se quiera mover sea una "pared"
     if (x_sim > 0 && x_sim < f - 1 && y_sim > 0 && y_sim < c-1 && matriz_laberinto[x_sim][y_sim]=='#'){
         matriz_laberinto[x_pared][y_pared] = ' '; // derriba la pared intermedia
-        printf("Voy a excavar en (%d, %d)\n", x_sim, y_sim);
+        //printf("Voy a excavar en (%d, %d)\n", x_sim, y_sim);
         generar_laberinto(x_sim, y_sim, f, c, matriz_laberinto);
-        printf("Volvi a (%d, %d) y sigo buscando\n", x, y); //Donde vuelve al estado anterior
+        //printf("Volvi a (%d, %d) y sigo buscando\n", x, y); //Donde vuelve al estado anterior
        }
     }
 }
@@ -232,8 +232,17 @@ Es como una cadena:
         printf("No se encontro salida.\n");
     }
 }
+/*argc (Argument Count): Es un entero que cuenta cuántas palabras escribiste en la terminal. (Si escribes ./laberinto 15 15, argc vale 3).
 
-int main(){
+argv (Argument Vector): Es un arreglo de "strings" (cadenas de texto) con lo que escribiste.
+
+    argv[0] es el nombre del programa.
+
+    argv[1] sería el "15" (las filas).
+
+    argv[2] sería el "15" (las columnas).*/
+
+int main(int argc, char *argv[]){
     int filas = 11; 
     int columnas = 11;
     char resolver;
@@ -252,6 +261,14 @@ variable en tiempo de ejecución, en lugar de un número fijo. Antes de los VLA,
 el tamaño tenía que ser una constante (como 100), o tenías que usar malloc.*/
 /*El código es dinámico gracias al uso de VLA (Variable Length Arrays)*/
     
+    if (argc == 3){
+        filas = atoi(argv[1]);
+        columnas = atoi(argv[2]);
+        printf("Tamanho del laberinto: %d filas y %d columnas \n", filas, columnas);
+    }else{
+        printf("No se encontraron parametros. Tamanho fijo 10*10 \n");
+    }
+    /*Esta seria la opcion que el usuario met manual los valores 
     printf("Escribir la cantidad de filas de la matriz:\t");
     scanf("%d", &filas); 
     //Son operadores fundamentales para manejar memoria directamente
@@ -259,7 +276,7 @@ el tamaño tenía que ser una constante (como 100), o tenías que usar malloc.*/
     // "*" se usa para declarar punteros y para desreferenciar (obtener el valor almacenado en dicha dirección)
     printf("Escribir la cantidad de columnas de la matriz:\t");
     scanf("%d", &columnas);
-
+    */
 //como el laberinto solo se puede generar con numeros impares, se hace esto, si es par se le resta 1, para ser impar
     if (filas % 2 == 0){
         filas--;
