@@ -12,6 +12,7 @@ void resuelve_laberinto_bfs(int f, int c, char matriz_laberinto[f][c]);
 //Los arreglos (arrays) siempre se pasan por referencia (puntero implícito).
 
 //Se define un tipo de dato que agrupa 2 enteros
+//typedef simplemente es un alias
 typedef struct {
     int x;
     int y;
@@ -36,10 +37,12 @@ void imprimir_laberinto(int f, int c, char matriz_laberinto[f][c]){
         }
 }
 
-//Generación de laberintos con DFS (Depth-First Search) recursivo, usa pila(Stack), LIFO.
+//Generación de laberintos con DFS (Depth-First Search) recursivo, Backtracking, usa pila(Stack), LIFO.
 //Recibe la posicion, las dimenciones del laberinto y el laberinto
+//Backtracking funciona gracias a la recursión y al Stack
+//Utilicé Backtracking mediante un DFS recursivo
 void generar_laberinto(int x, int y, int f, int c, char matriz_laberinto[f][c]){
-/* Se encarga de "escabar" los caminos, siendo " " lugar posible para moverse y
+/*Se encarga de "escabar" los caminos, siendo " " lugar posible para moverse y
 "#" las paredes del laberinto*/
 //Se marca la celda recorrida
     matriz_laberinto[x][y] = ' '; 
@@ -228,7 +231,8 @@ Es como una cadena:
 }
 
 int main(){
-    int filas, columnas;
+    int filas = 11; 
+    int columnas = 11;
     char resolver;
     srand(time(NULL));
 /*srand(time(NULL)): rand() es un algoritmo matemático que genera números que parecen aleatorios.
@@ -239,9 +243,17 @@ número inicial y le aplicas operaciones (multiplicaciones, sumas y restos)
 Tú le das un número inicial (llamado Semilla o Seed).
 La fórmula escupe un resultado.
 Ese resultado se usa como entrada para generar el siguiente.*/
-
+/*Los VLA (Variable Length Arrays) o "Arreglos de Longitud Variable" son una característica de C 
+(introducida en el estándar C99) que te permite definir el tamaño de un array usando una 
+variable en tiempo de ejecución, en lugar de un número fijo. Antes de los VLA, si querías un array, 
+el tamaño tenía que ser una constante (como 100), o tenías que usar malloc.*/
+/*El código es dinámico gracias al uso de VLA (Variable Length Arrays)*/
+    
     printf("Escribir la cantidad de filas de la matriz:\t");
-    scanf("%d", &filas); // & significa "dirección de". Estás pasándole a la función scanf un puntero a la variable filas
+    scanf("%d", &filas); 
+    //Son operadores fundamentales para manejar memoria directamente
+    // "&" significa "dirección de". Estás pasándole a la función scanf un puntero a la variable filas
+    // "*" se usa para declarar punteros y para desreferenciar (obtener el valor almacenado en dicha dirección)
     printf("Escribir la cantidad de columnas de la matriz:\t");
     scanf("%d", &columnas);
 
