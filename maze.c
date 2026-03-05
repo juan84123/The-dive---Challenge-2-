@@ -22,6 +22,9 @@ typedef struct {
 void crea_tablero(int f, int c, char matriz_laberinto[f][c]){
     for(int i = 0; i < f; i++ ){
         for(int j = 0; j < c; j++){
+/*"#" no es un carácter, es un string (una cadena de caracteres). 
+En C, las cadenas usan comillas dobles y su tipo real es char* (un puntero al primer carácter).
+Tu matriz es de char, o sea espera un solo carácter.*/
                 matriz_laberinto[i][j] = '#';
         }
     }
